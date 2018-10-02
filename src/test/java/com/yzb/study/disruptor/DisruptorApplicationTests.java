@@ -1,7 +1,11 @@
 package com.yzb.study.disruptor;
 
+import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.YieldingWaitStrategy;
+import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.dsl.ProducerType;
 import com.yzb.study.disruptor.util.DataConsumer;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Test;
@@ -16,6 +20,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,7 +30,7 @@ public class DisruptorApplicationTests {
     @Test
     public void testArrayBlockingQueue() {
 
-        final ArrayBlockingQueue<Data> queue = new ArrayBlockingQueue<Data>(10000000);
+        final ArrayBlockingQueue<Data> queue = new ArrayBlockingQueue<Data>(100000000);
 
         final long startTime = System.currentTimeMillis();
 
@@ -33,7 +38,7 @@ public class DisruptorApplicationTests {
             @Override
             public void run() {
                 long i = 0;
-                while (i < 10000000) {
+                while (i < 100000000) {
                     Data data = new Data(i, "c" + i);
                     try {
                         queue.put(data);
@@ -50,7 +55,7 @@ public class DisruptorApplicationTests {
             @Override
             public void run() {
                 int k = 0;
-                while (k < 10000000) {
+                while (k < 100000000) {
                     try {
                         queue.take();
                     } catch (InterruptedException e) {
@@ -71,23 +76,49 @@ public class DisruptorApplicationTests {
 
     }
 
+    private int ringBufferSize = 65536;
+
+
     @Test
     public void testDisruptor() {
-//        DataConsumer consumer = new DataConsumer();
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                RingBuffer<Data> ringBuffer = disruptor.getRingBuffer();
-//                for (long i = 0; i < 10000000; i++) {
-//                    long seq = ringBuffer.next();
-//                    Data data = ringBuffer.get(seq);
-//                    data.setId(i);
-//                    data.setName("c" + i);
-//                    ringBuffer.publish(seq);
-//                }
-//            }
-//        }).start();
+        final long startTime = System.currentTimeMillis();
+        final Disruptor<Data> disruptor = new Disruptor<Data>(new EventFactory<Data>() {
+            @Override
+            public Data newInstance() {
+                return new Data();
+            }
+        },
+                ringBufferSize,
+                Executors.newSingleThreadExecutor(),
+                ProducerType.SINGLE,
+                new YieldingWaitStrategy()
+        );
+
+
+        DataConsumer consumer = new DataConsumer();
+        disruptor.handleEventsWith(consumer);
+        disruptor.start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RingBuffer<Data> ringBuffer = disruptor.getRingBuffer();
+                for (long i = 0; i < 100000000; i++) {
+                    long seq = ringBuffer.next();
+                    Data data = ringBuffer.get(seq);
+                    data.setId(i);
+                    data.setName("c" + i);
+                    ringBuffer.publish(seq);
+                }
+                long endTime = System.currentTimeMillis();
+                System.out.println("Disruptor constTime = " + (endTime - startTime) + "ms");
+            }
+        }).start();
+
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 

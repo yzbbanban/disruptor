@@ -46,7 +46,7 @@ public class Main2 {
         //并行操作
 //        disruptor.handleEventsWith(new Handler1(),new Handler2(),new Handler3(),new Handler4());
 
-        //菱形操作
+        //2.3 菱形操作
 //        disruptor.handleEventsWith(new Handler1(),new Handler2()).handleEventsWith(new Handler3());
         EventHandlerGroup<Trade> ehGroup = disruptor.handleEventsWith(new Handler1(), new Handler2());
         ehGroup.then(new Handler3());

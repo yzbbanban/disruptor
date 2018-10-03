@@ -37,7 +37,7 @@ public class Main2 {
 //                .handleEventsWith(new Handler4());
 
 
-        //2.2并行操作
+        //2.2并行操作 两种方式，添加多个 handler 实现即可
 //        disruptor.handleEventsWith(new Handler1());
 //        disruptor.handleEventsWith(new Handler2());
 //        disruptor.handleEventsWith(new Handler3());

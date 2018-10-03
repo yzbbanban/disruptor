@@ -1,18 +1,12 @@
-package com.yzb.study.disruptor.common.height;
-
-import java.util.concurrent.atomic.AtomicInteger;
+package com.yzb.study.disruptor.common.height.multi;
 
 /**
- * Created by brander on 2018/10/2
+ * Created by brander on 2018/10/3
  */
-public class Trade {
+public class Order {
     private String id;
     private String name;
     private double price;
-    private AtomicInteger count = new AtomicInteger(0);
-
-    public Trade() {
-    }
 
     public String getId() {
         return id;
@@ -38,21 +32,12 @@ public class Trade {
         this.price = price;
     }
 
-    public AtomicInteger getCount() {
-        return count;
-    }
-
-    public void setCount(AtomicInteger count) {
-        this.count = count;
-    }
-
     @Override
     public String toString() {
-        return "Trade{" +
+        return "Order{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", count=" + count +
                 '}';
     }
 }

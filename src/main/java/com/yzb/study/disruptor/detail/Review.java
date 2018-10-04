@@ -39,6 +39,11 @@ public class Review {
 //                        e.printStackTrace();
 //                    }
 //                }
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 LockSupport.park();
 
@@ -48,7 +53,7 @@ public class Review {
 
         a.start();
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         LockSupport.unpark(a);
 //        synchronized (lock){

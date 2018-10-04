@@ -1,7 +1,6 @@
 package com.yzb.study.disruptor.detail;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
@@ -59,6 +58,31 @@ public class Review {
 //        synchronized (lock){
 //            lock.notify();
 //        }
+
+        ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(5,
+                Runtime.getRuntime().availableProcessors() * 2,
+                60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(200), new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("order-thread");
+                //守护线程
+                if (thread.isDaemon()) {
+                    thread.setDaemon(false);
+                }
+                //顺序
+                if (Thread.NORM_PRIORITY != thread.getPriority()) {
+                    thread.setPriority(Thread.NORM_PRIORITY);
+                }
+                return thread;
+            }
+        }, new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                System.out.println("拒绝策略: " + executor);
+            }
+        });
+
 
     }
 }

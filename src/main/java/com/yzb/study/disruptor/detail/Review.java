@@ -3,6 +3,7 @@ package com.yzb.study.disruptor.detail;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by brander on 2018/10/3
@@ -82,6 +83,11 @@ public class Review {
                 System.out.println("拒绝策略: " + executor);
             }
         });
+
+
+        ReentrantLock reentrantLock=new ReentrantLock(false);
+
+        CountDownLatch latch=new CountDownLatch(1);
 
 
     }

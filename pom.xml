@@ -41,6 +41,8 @@
 			<artifactId>disruptor</artifactId>
 			<version>3.3.2</version>
 		</dependency>
+
+		<!--顺序 uuid-->
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
 			<artifactId>java-uuid-generator</artifactId>

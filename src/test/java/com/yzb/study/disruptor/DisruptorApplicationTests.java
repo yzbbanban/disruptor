@@ -79,8 +79,8 @@ public class DisruptorApplicationTests {
     private int ringBufferSize = 65536;
 
 
-    @Test
-    public void testDisruptor() {
+    public static void main(String[] args) {
+        int ringBufferSize = 65536;
         final long startTime = System.currentTimeMillis();
         final Disruptor<Data> disruptor = new Disruptor<Data>(new EventFactory<Data>() {
             @Override
